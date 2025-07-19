@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
     <title>Meet</title>
     <style>
       /***** MODAL DIALOG ****/
@@ -111,6 +112,30 @@
         right: 2%;
       }
 
+      .circle {
+        width: 15px;
+        height: 15px;
+        border-radius: 50%;
+        box-shadow: 0px 0px 1px 1px #0000001a;
+      }
+
+      .green {
+        background: #66ff99;
+      }
+
+      .pulse {
+        animation: pulse-animation 2s infinite;
+      }
+
+      @keyframes pulse-animation {
+        0% {
+          box-shadow: 0 0 0 0px rgba(0, 0, 0, 0.2);
+        }
+        100% {
+          box-shadow: 0 0 0 30px rgba(0, 0, 0, 0);
+        }
+      }
+
       @keyframes fadeIn {
         0% {
           opacity: 0;
@@ -165,7 +190,7 @@
         > -->
         <div
           id="open-modal"
-          class="user-card open-modal-btn"
+          class="user-card open-modal-btn relative"
           data-id="<%=user.id%>"
           data-name="<%=user.username%>"
           data-photo="<%=user.avatar%>"
@@ -184,6 +209,9 @@
             loading="lazy"
             onerror="this.src='../../assets/images/placeholder_pic.jpg';"
           />
+          <% if (user.status === 'online') { %>
+          <div class="absolute bottom-6 left-4 circle pulse green"></div>
+          <% } %>
         </div>
         <% }) %>
       </div>
@@ -221,36 +249,81 @@
                 margin-bottom: 10px;
               "
             />
-            <div class="absolute top-20 right-10">
+            <div class="absolute top-10 right-20">
               <h2 id="modal-name" class="text-gray-900 text-4xl"></h2>
               <img
                 src="/assets/images/Megaphone.png"
                 alt="megaphone"
                 width="28"
                 height="28"
-                class="mx-24 -my-10 cursor-pointer"
+                class="-mx-28 -my-10 cursor-pointer"
                 onclick="window.alert('Clicked..')"
               />
-              </h2>
-              <p class="mb-4"><strong>Status:</strong> <span id="modal-status"></span></p>
+
+              <p class="mb-12">
+                <strong>Status:</strong> <span id="modal-status"></span>
+              </p>
             </div>
             <span class="close-icon">&times;</span>
           </div>
           <div class="modal-content">
-            <form hx-post="/meetings" hx-target="#modal" hx-swap="innerHTML">
-              <label>Environment:</label>
-              <select name="name" class="w-full mb-2 block p-2 border rounded">
-                <option value="">Maze</option>
+            <!-- <form
+              hx-post="/submit"
+              hx-target="#response-modal"
+              hx-target-error="#response"
+              hx-swap="innerHTML"
+            > -->
+            <form action="/schedule" method="post" id="bookingForm">
+              <input class="hidden" id="crush" name="crush" />
+              <label>Background:</label>
+              <select
+                name="environment"
+                id="environment"
+                class="w-full mb-2 block p-2 border rounded"
+              >
+                <option value="">--Environment--</option>
+                <option value="https://playcanv.as/p/HTLv05aD/">
+                  Maze NPCs
+                </option>
+                <option value="https://playcanv.as/p/c1o59wX5/">
+                  Bungalow
+                </option>
+                <option value="https://playcanv.as/p/yQ1cNsmW/" disabled>
+                  Walled space
+                </option>
+
+                <option value="https://playcanv.as/p/sertSRJP/" disabled>
+                  Geometrics
+                </option>
+
+                <option value="https://playcanv.as/p/XkL7IH8y/" disabled>
+                  Lobby scene
+                </option>
                 <!-- Add more options if needed -->
               </select>
 
-              <label>Duration (mins):</label>
+              <!-- <label>Duration (mins):</label>
               <input
                 type="number"
                 name="duration"
+                min="5"
+                max="15"
+                placeholder="How long should Meeting last? (5, 10, or 15 mins)"
                 class="w-full mb-2 block p-2 border rounded"
                 required
-              />
+              /> -->
+              <label for="duration-select">Choose a duration (minutes):</label>
+              <select
+                name="duration"
+                class="w-full mb-2 block p-2 border rounded"
+              >
+                <option value="">--Duration--</option>
+                <option value="5" selected>5</option>
+                <option value="10">10</option>
+                <option value="15" disabled>15</option>
+                <option value="20" disabled>20</option>
+                <option value="30" disabled>30</option>
+              </select>
 
               <label>Date & Time:</label>
               <input
@@ -259,13 +332,20 @@
                 class="w-full mb-4 block p-2 border rounded"
                 required
               />
+              <input
+                type="submit"
+                value="Schedule"
+                class="bg-slate-300 hover:cursor-not-allowed text-white px-4 py-2 rounded"
+                id="submitBtn"
+              />
 
-              <button
+              <!-- <button
                 type="submit"
                 class="bg-green-600 text-white px-4 py-2 rounded"
+                id="submitBtn"
               >
                 Schedule
-              </button>
+              </button> -->
             </form>
           </div>
           <!-- <div class="modal-name">
@@ -274,13 +354,43 @@
         </div>
       </div>
     </main>
-    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+
     <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const form = document.getElementById("bookingForm");
+        const submitButton = document.getElementById("submitBtn");
+        let envInput = document.getElementById("environment");
+
+        // document.getElementById("environment").value === ""
+        //   ? (submitButton.className = "bg-slate-300 hover:cursor-not-allowed")
+        //   : "cursor-pointer bg-green-600 text-white px-4 py-2 rounded";
+        envInput.addEventListener("change", function () {
+          if (envInput.value === "") {
+            submitButton.className =
+              "bg-slate-300 hover:cursor-not-allowed text-white px-4 py-2 rounded";
+            // submitButton.classList.remove("cursor-not-allowed");
+            // submitButton.classList.remove("bg-slate-300");
+            // submitButton.classList.add("cursor-pointer");
+            // submitButton.classList.add("bg-green-600");
+          } else {
+            submitButton.className =
+              "cursor-pointer bg-green-600 text-white px-4 py-2 rounded";
+          }
+        });
+
+        // form.addEventListener("input", function () {
+        //   submitButton.disabled = !form.checkValidity();
+        // });
+      });
+
       const modalOverlay = document.getElementById("modal-overlay");
       const openModalBtn = document.getElementById("open-modal");
       const closeModalBtns = document.querySelectorAll(
         ".close-icon, .close-button"
       );
+      document.getElementById("submitBtn").addEventListener("click", () => {
+        document.getElementById("modal-overlay").style.display = "none";
+      });
 
       openModalBtn.addEventListener("click", () => {
         modalOverlay.style.display = "flex";
@@ -294,6 +404,7 @@
 
       document.querySelectorAll(".user-card").forEach((card) => {
         card.addEventListener("click", () => {
+          document.getElementById("crush").value = card.dataset.name;
           document.getElementById("modal-name").textContent = card.dataset.name;
           document.getElementById("modal-status").textContent =
             card.dataset.status;

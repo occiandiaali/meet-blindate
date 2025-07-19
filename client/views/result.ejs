@@ -1,0 +1,24 @@
+<button
+  style="
+    cursor: pointer;
+    width: 80px;
+    height: 40px;
+    border-radius: 12px;
+    background-color: teal;
+    color: white;
+  "
+  onclick="window.location.assign('/')"
+>
+  Home
+</button>
+<h1>Submission successful!</h1>
+<p>Environment: <%= environment %></p>
+<p>Duration: <%= duration %></p>
+<p>Target: <%= crush %></p>
+<p>Sender: <%= thisUser %></p>
+<p>Room: <%= roomId %></p>
+<% if(datetime) { %>
+<p style="color: green">Date: <%= datetime %></p>
+<% } else { %>
+<p style="color: red">This schedule has expired!</p>
+<% } %>

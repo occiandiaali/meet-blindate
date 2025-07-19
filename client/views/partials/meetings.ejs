@@ -1,2 +1,26 @@
-<h1 class="text-3xl mt-20">My Meetings</h1>
-<p>This is the Meetings page content, loaded dynamically.</p>
+<h1 class="text-3xl mt-20">Meetings ✅</h1>
+<p>You have no meetings to show.</p>
+
+<script type="importmap">
+  {
+    "imports": {
+      "socket.io-client": "https://cdn.socket.io/4.8.1/socket.io.esm.min.js"
+    }
+  }
+</script>
+
+<script type="module">
+  import { formatDate, isInputEqualToToday } from "/js/calendarMatters.js";
+
+  const generateRandomHexColor = () => {
+    return "#" + Math.floor(Math.random() * 16777215).toString(16);
+  };
+
+  let socket,
+    roomIdentity = null;
+  const playerPlus = [];
+
+  function onWindowLoaded() {}
+
+  window.onload = onWindowLoaded();
+</script>

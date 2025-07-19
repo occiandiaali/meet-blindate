@@ -1,10 +1,34 @@
 const express = require("express");
 const users = require("./data/fakes");
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// const { createClient } = require("@supabase/supabase-js");
+
+// const supabaseUrl = "https://tvrlwzkwyvmtzunhfzid.supabase.co";
+// const supabaseKey =
+//   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR2cmx3emt3eXZtdHp1bmhmemlkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI3NjM3ODEsImV4cCI6MjA2ODMzOTc4MX0.luqP6ea42YWzlQqBxgUIvyP4p3abaHodE0jLsOFoMVE";
+// const supabase = createClient(supabaseUrl, supabaseKey);
+
+function generateRoomId() {
+  return Math.random().toString(36).substring(2, 15);
+}
+const formatter = new Intl.DateTimeFormat("en-US", {
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+  hour: "2-digit",
+  minute: "2-digit",
+  second: "2-digit",
+  hour12: false,
+});
+
 // Middleware
 app.use(express.static("public"));
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+
 app.set("view engine", "ejs");
 
 // // Sample data
@@ -40,23 +64,50 @@ app.get("/meetings", (req, res) => {
     res.render("index", { users }); // or another base template that includes the navbar + #main
   }
 });
-app.post("/meetings", async (req, res) => {
-  const { name, duration, datetime } = req.body;
+app.post("/schedule", (req, res) => {
+  const { crush, environment, duration, datetime } = req.body;
+  // const env = req.body.environment;
+  // const duration = req.body.duration;
+  // const crush = req.body.crush;
+  const roomId = generateRoomId();
+  const thisUser = "AfroBro";
+  // const theDate = formatter.format(datetime).replace(",", "");
 
   try {
-    const { data, error } = await supabase
-      .from("meetings")
-      .insert([{ name, duration: parseInt(duration), datetime }]);
+    // const { data, error } = await supabase
+    //   .from("meetings")
+    //   .insert([{ name, duration: parseInt(duration), datetime }]);
 
-    if (error) throw error;
+    // if (error) throw error;
+    // console.log(
+    //   `Scheduled: RoomID: ${roomId} in ${environment} with ${crush} for ${duration} mins, on ${datetime}`
+    // );
 
-    res.send(`
-      <div class="p-4 bg-green-100 text-green-800 rounded">
-        Meeting with ${name} scheduled for ${duration} minutes on ${new Date(
-      datetime
-    ).toLocaleString()} ✅
-      </div>
-    `);
+    // res.send(`
+    //   <div class="p-4 bg-green-100 text-green-800 rounded">
+    //     Meeting with ${crush} in room ${roomId} with ${environment} background scheduled for ${duration} minutes on ${new Date(
+    //   datetime
+    // ).toLocaleString()} ✅
+    //   </div>
+    // `);
+    // if (isHTMX(req)) {
+    //   res.send(`
+    //   <div class="p-4 bg-green-100 text-green-800 rounded">
+    //     Meeting between ${thisUser} & ${crush} in ${environment} background (Room ${roomId}), scheduled for ${duration} minutes on ${datetime} ✅
+    //   </div>
+    // `);
+    // } else {
+    //   res.render("index", { users }); // or another base template that includes the navbar + #main
+    // }
+
+    res.render("result", {
+      crush,
+      environment,
+      duration,
+      datetime,
+      roomId,
+      thisUser,
+    });
   } catch (err) {
     res.status(500).send(`
       <div class="p-4 bg-red-100 text-red-600 rounded">
