@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Meet</title>
+    <style>
+      /***** MODAL DIALOG ****/
+      #modal {
+        /* Underlay covers entire screen. */
+        position: fixed;
+        top: 0px;
+        bottom: 0px;
+        left: 0px;
+        right: 0px;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+
+        /* Flexbox centers the .modal-content vertically and horizontally */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        /* Animate when opening */
+        animation-name: fadeIn;
+        animation-duration: 150ms;
+        animation-timing-function: ease;
+      }
+
+      #modal > .modal-underlay {
+        /* underlay takes up the entire viewport. This is only
+	required if you want to click to dismiss the popup */
+        position: absolute;
+        z-index: -1;
+        top: 0px;
+        bottom: 0px;
+        left: 0px;
+        right: 0px;
+      }
+
+      #modal > .modal-content {
+        /* Position visible dialog near the top of the window */
+        margin-top: 10vh;
+
+        /* Sizing for visible dialog */
+        width: 80%;
+        max-width: 600px;
+
+        /* Display properties for visible dialog*/
+        border: solid 1px #999;
+        border-radius: 8px;
+        box-shadow: 0px 0px 20px 0px rgba(0, 0, 0, 0.3);
+        background-color: white;
+        padding: 20px;
+
+        /* Animate when opening */
+        animation-name: zoomIn;
+        animation-duration: 150ms;
+        animation-timing-function: ease;
+      }
+
+      #modal.closing {
+        /* Animate when closing */
+        animation-name: fadeOut;
+        animation-duration: 150ms;
+        animation-timing-function: ease;
+      }
+
+      #modal.closing > .modal-content {
+        /* Animate when closing */
+        animation-name: zoomOut;
+        animation-duration: 150ms;
+        animation-timing-function: ease;
+      }
+
+      .modal-header {
+        position: relative;
+      }
+
+      .modal-overlay {
+        display: none; /* Hidden by default */
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        justify-content: center;
+        align-items: center;
+      }
+
+      .modal {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        max-width: 500px;
+        width: 100%;
+        height: 86%;
+        margin-top: 6px;
+      }
+
+      .close-icon {
+        cursor: pointer;
+        /* float: right; */
+        font-size: xx-large;
+        font-weight: bold;
+        color: red;
+        position: absolute;
+        top: 0;
+        right: 2%;
+      }
+
+      @keyframes fadeIn {
+        0% {
+          opacity: 0;
+        }
+        100% {
+          opacity: 1;
+        }
+      }
+
+      @keyframes fadeOut {
+        0% {
+          opacity: 1;
+        }
+        100% {
+          opacity: 0;
+        }
+      }
+
+      @keyframes zoomIn {
+        0% {
+          transform: scale(0.9);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+
+      @keyframes zoomOut {
+        0% {
+          transform: scale(1);
+        }
+        100% {
+          transform: scale(0.9);
+        }
+      }
+    </style>
+  </head>
+  <body class="bg-gray-50 text-gray-900">
+    <%- include('partials/navbar') %>
+
+    <main class="max-w-4xl mx-auto p-2" id="mainContent">
+      <div
+        class="grid grid-cols-3 w-full md:grid-cols-4 lg:grid-cols-6 gap-1 mt-20"
+      >
+        <% users.forEach(user => { %>
+        <!-- <div
+          id="open-modal"
+          class="user-card open-modal-btn"
+          hx-get="/user/<%= user.id %>"
+          hx-target="#modal-overlay"
+          hx-swap="innerHTML"
+        > -->
+        <div
+          id="open-modal"
+          class="user-card open-modal-btn"
+          data-id="<%=user.id%>"
+          data-name="<%=user.username%>"
+          data-photo="<%=user.avatar%>"
+          data-status="<%=user.status%>"
+        >
+          <!-- <div
+          class="user-card"
+          hx-get="/user/<%= user.id %>"
+          hx-target="#modal"
+          hx-swap="beforeend"
+        > -->
+          <img
+            src="<%= user.avatar %>"
+            alt="<%= user.username %>"
+            class="w-full cursor-pointer"
+            loading="lazy"
+            onerror="this.src='../../assets/images/placeholder_pic.jpg';"
+          />
+        </div>
+        <% }) %>
+      </div>
+      <!-- <div id="modal"></div> -->
+      <!-- <div
+        id="modal"
+        _="on closeModal add .closing then wait for animationend then remove me"
+      >
+        <div class="modal-underlay" _="on click trigger closeModal"></div>
+        <div class="modal-content">
+          <h1>Modal Dialog</h1>
+          This is the modal content. You can put anything here, like text, or a
+          form, or an image.
+          <br />
+          <br />
+          <button
+            class="bg-red-500 rounded w-20 h-7 text-white"
+            _="on click trigger closeModal"
+          >
+            Close
+          </button>
+        </div>
+      </div> -->
+      <div id="modal-overlay" class="modal-overlay">
+        <div class="modal mt-14">
+          <div class="modal-header">
+            <img
+              id="modal-photo"
+              src=""
+              alt="User Photo"
+              style="
+                width: 40%;
+                height: 40%;
+                border-radius: 8px;
+                margin-bottom: 10px;
+              "
+            />
+            <div class="absolute top-20 right-10">
+              <h2 id="modal-name" class="text-gray-900 text-4xl"></h2>
+              <img
+                src="/assets/images/Megaphone.png"
+                alt="megaphone"
+                width="28"
+                height="28"
+                class="mx-24 -my-10 cursor-pointer"
+                onclick="window.alert('Clicked..')"
+              />
+              </h2>
+              <p class="mb-4"><strong>Status:</strong> <span id="modal-status"></span></p>
+            </div>
+            <span class="close-icon">&times;</span>
+          </div>
+          <div class="modal-content">
+            <form hx-post="/meetings" hx-target="#modal" hx-swap="innerHTML">
+              <label>Environment:</label>
+              <select name="name" class="w-full mb-2 block p-2 border rounded">
+                <option value="">Maze</option>
+                <!-- Add more options if needed -->
+              </select>
+
+              <label>Duration (mins):</label>
+              <input
+                type="number"
+                name="duration"
+                class="w-full mb-2 block p-2 border rounded"
+                required
+              />
+
+              <label>Date & Time:</label>
+              <input
+                type="datetime-local"
+                name="datetime"
+                class="w-full mb-4 block p-2 border rounded"
+                required
+              />
+
+              <button
+                type="submit"
+                class="bg-green-600 text-white px-4 py-2 rounded"
+              >
+                Schedule
+              </button>
+            </form>
+          </div>
+          <!-- <div class="modal-name">
+            <button class="close-button">Close</button>
+          </div> -->
+        </div>
+      </div>
+    </main>
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <script>
+      const modalOverlay = document.getElementById("modal-overlay");
+      const openModalBtn = document.getElementById("open-modal");
+      const closeModalBtns = document.querySelectorAll(
+        ".close-icon, .close-button"
+      );
+
+      openModalBtn.addEventListener("click", () => {
+        modalOverlay.style.display = "flex";
+      });
+
+      closeModalBtns.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          modalOverlay.style.display = "none";
+        });
+      });
+
+      document.querySelectorAll(".user-card").forEach((card) => {
+        card.addEventListener("click", () => {
+          document.getElementById("modal-name").textContent = card.dataset.name;
+          document.getElementById("modal-status").textContent =
+            card.dataset.status;
+          document.getElementById("modal-status").style.color =
+            card.dataset.status === "online" ? "#00ff00" : "#808080";
+
+          document.getElementById("modal-photo").src = card.dataset.photo;
+          modalOverlay.style.display = "flex";
+        });
+      });
+    </script>
+  </body>
+</html>

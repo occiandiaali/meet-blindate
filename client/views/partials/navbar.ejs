@@ -1,0 +1,83 @@
+<nav
+  class="bg-white flex items-center justify-between px-6 py-2 fixed w-full z-50"
+>
+  <div class="flex items-center gap-6">
+    <a href="/" class="text-3xl text-green-500 font-bold">/miːt/</a>
+    <a
+      href="/account"
+      hx-get="/account"
+      hx-target="#mainContent"
+      hx-swap="innerHTML"
+      hx-push-url="true"
+      class="hidden md:block text-md"
+      >Account</a
+    >
+    <a
+      href="/meetings"
+      hx-get="/meetings"
+      hx-target="#mainContent"
+      hx-swap="innerHTML"
+      hx-push-url="true"
+      class="hidden md:block text-md"
+      >Meetings</a
+    >
+    <!-- <a href="/notifications" hx-get="/notifications" hx-target="#mainContent" hx-push-url="true" hx-swap="innerHTML" class="text-lg">Notifications</a> -->
+  </div>
+  <div class="relative">
+    <button
+      id="avatarBtn"
+      class="w-7 h-7 md:w-10 md:h-10 rounded-full overflow-hidden"
+    >
+      <img
+        src="https://ionicframework.com/docs/img/demos/avatar.svg"
+        alt="User"
+        class="md:w-10 md:h-10"
+      />
+    </button>
+    <div
+      id="dropdownMenu"
+      class="absolute right-0 mt-2 w-40 bg-white border rounded shadow hidden"
+    >
+      <a
+        href="/account"
+        hx-get="/account"
+        hx-target="#mainContent"
+        hx-swap="innerHTML"
+        hx-push-url="true"
+        class="md:hidden sm:block block px-4 py-2 hover:bg-gray-100 dropped"
+        >Account</a
+      >
+      <a
+        href="/meetings"
+        hx-get="/meetings"
+        hx-target="#mainContent"
+        hx-swap="innerHTML"
+        hx-push-url="true"
+        class="md:hidden sm:block block px-4 py-2 hover:bg-gray-100 dropped"
+        >Meetings</a
+      >
+      <a
+        href="/settings"
+        hx-get="/settings"
+        hx-target="#mainContent"
+        hx-swap="innerHTML"
+        hx-push-url="true"
+        class="block px-4 py-2 hover:bg-gray-100 dropped"
+        >Settings</a
+      >
+      <a href="#" class="block px-4 py-2 hover:bg-gray-100">Sign out</a>
+    </div>
+  </div>
+</nav>
+
+<script>
+  const avatarBtn = document.getElementById("avatarBtn");
+  const dropdownMenu = document.getElementById("dropdownMenu");
+  avatarBtn.addEventListener("click", () =>
+    dropdownMenu.classList.toggle("hidden")
+  );
+  const dropdownAnchors = document.querySelectorAll("a.dropped");
+  dropdownAnchors.forEach((drop) => {
+    drop.addEventListener("click", () => dropdownMenu.classList.add("hidden"));
+  });
+</script>
