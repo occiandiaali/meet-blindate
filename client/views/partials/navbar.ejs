@@ -65,7 +65,15 @@
         class="block px-4 py-2 hover:bg-gray-100 dropped"
         >Settings</a
       >
-      <a href="#" class="block px-4 py-2 hover:bg-gray-100">Sign out</a>
+      <a
+        href="/signin"
+        hx-get="/signin"
+        hx-target="#mainContent"
+        hx-swap="innerHTML"
+        hx-push-url="true"
+        class="block px-4 py-2 hover:bg-gray-100 dropped"
+        >Sign in</a
+      >
     </div>
   </div>
 </nav>

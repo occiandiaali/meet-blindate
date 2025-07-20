@@ -24,19 +24,29 @@ const formatter = new Intl.DateTimeFormat("en-US", {
   hour12: false,
 });
 
+function convertMilliseconds(ms) {
+  let totalSeconds = Math.floor(ms / 1000);
+  let hours = Math.floor((totalSeconds % 86400) / 3600);
+  let minutes = Math.floor((totalSeconds % 3600) / 60);
+  let seconds = totalSeconds % 60;
+  let ampm = hours >= 12 ? "PM" : "AM";
+  hours = hours % 12;
+  hours = hours ? hours : 12; // the hour '0' should be '12'
+  return `${hours}:${minutes.toString().padStart(2, "0")}:${seconds
+    .toString()
+    .padStart(2, "0")} ${ampm}`;
+}
+
+function isHTMX(req) {
+  return req.get("HX-Request");
+}
+
 // Middleware
 app.use(express.static("public"));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 app.set("view engine", "ejs");
-
-// // Sample data
-// const users = [
-//   { id: 1, name: "Alice", image: "https://picsum.photos/100/100?random=2" },
-//   { id: 2, name: "Bob", image: "https://i.pravatar.cc/100?img=3" },
-//   // Add more users here
-// ];
 
 // Routes
 app.get("/", (req, res) => {
@@ -53,10 +63,6 @@ app.get("/user/:id", (req, res) => {
   res.render("modal", { user });
 });
 
-function isHTMX(req) {
-  return req.get("HX-Request");
-}
-
 app.get("/meetings", (req, res) => {
   if (isHTMX(req)) {
     res.render("partials/meetings");
@@ -71,7 +77,17 @@ app.post("/schedule", (req, res) => {
   // const crush = req.body.crush;
   const roomId = generateRoomId();
   const thisUser = "AfroBro";
-  // const theDate = formatter.format(datetime).replace(",", "");
+  // let now = datetime;
+
+  // let start_time = now; //now.toLocaleTimeString();
+  // let end_time = now;
+  let now = datetime;
+  let expires = Math.floor((Math.floor(+duration / 1000) % 3600) / 60);
+  let formatStart = Date.parse(now);
+  let start_time = convertMilliseconds(formatStart);
+  //now.setMinutes(now.getMinutes() + +duration);
+  let formatEnd = Date.parse(now) + +duration;
+  let end_time = convertMilliseconds(formatEnd);
 
   try {
     // const { data, error } = await supabase
@@ -103,10 +119,12 @@ app.post("/schedule", (req, res) => {
     res.render("result", {
       crush,
       environment,
-      duration,
-      datetime,
+      expires,
+      now,
       roomId,
       thisUser,
+      start_time,
+      end_time,
     });
   } catch (err) {
     res.status(500).send(`
@@ -134,6 +152,14 @@ app.get("/account", (req, res) => {
 app.get("/settings", (req, res) => {
   if (isHTMX(req)) {
     res.render("partials/settings");
+  } else {
+    res.render("index", { users }); // or another base template that includes the navbar + #main
+  }
+});
+
+app.get("/signin", (req, res) => {
+  if (isHTMX(req)) {
+    res.render("partials/signin");
   } else {
     res.render("index", { users }); // or another base template that includes the navbar + #main
   }

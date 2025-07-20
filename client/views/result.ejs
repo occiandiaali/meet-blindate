@@ -13,12 +13,11 @@
 </button>
 <h1>Submission successful!</h1>
 <p>Environment: <%= environment %></p>
-<p>Duration: <%= duration %></p>
+<p>Duration: <%= expires %></p>
 <p>Target: <%= crush %></p>
 <p>Sender: <%= thisUser %></p>
 <p>Room: <%= roomId %></p>
-<% if(datetime) { %>
-<p style="color: green">Date: <%= datetime %></p>
-<% } else { %>
-<p style="color: red">This schedule has expired!</p>
-<% } %>
+
+<p>Date: <%= now %></p>
+<p>Start: <%= start_time %></p>
+<p>End: <%= end_time %></p>
