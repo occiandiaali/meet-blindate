@@ -4,12 +4,12 @@ const users = require("./data/fakes");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// const { createClient } = require("@supabase/supabase-js");
+const { createClient } = require("@supabase/supabase-js");
 
-// const supabaseUrl = "https://tvrlwzkwyvmtzunhfzid.supabase.co";
-// const supabaseKey =
-//   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR2cmx3emt3eXZtdHp1bmhmemlkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI3NjM3ODEsImV4cCI6MjA2ODMzOTc4MX0.luqP6ea42YWzlQqBxgUIvyP4p3abaHodE0jLsOFoMVE";
-// const supabase = createClient(supabaseUrl, supabaseKey);
+const supabaseUrl = "https://tvrlwzkwyvmtzunhfzid.supabase.co";
+const supabaseKey =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR2cmx3emt3eXZtdHp1bmhmemlkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI3NjM3ODEsImV4cCI6MjA2ODMzOTc4MX0.luqP6ea42YWzlQqBxgUIvyP4p3abaHodE0jLsOFoMVE";
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 function generateRoomId() {
   return Math.random().toString(36).substring(2, 15);
@@ -70,31 +70,53 @@ app.get("/meetings", (req, res) => {
     res.render("index", { users }); // or another base template that includes the navbar + #main
   }
 });
-app.post("/schedule", (req, res) => {
+app.post("/schedule", async (req, res) => {
   const { crush, environment, duration, datetime } = req.body;
-  // const env = req.body.environment;
-  // const duration = req.body.duration;
-  // const crush = req.body.crush;
+
   const roomId = generateRoomId();
   const thisUser = "AfroBro";
-  // let now = datetime;
 
-  // let start_time = now; //now.toLocaleTimeString();
-  // let end_time = now;
   let now = datetime;
   let expires = Math.floor((Math.floor(+duration / 1000) % 3600) / 60);
   let formatStart = Date.parse(now);
-  let start_time = convertMilliseconds(formatStart);
-  //now.setMinutes(now.getMinutes() + +duration);
+  let start = convertMilliseconds(formatStart);
+
   let formatEnd = Date.parse(now) + +duration;
-  let end_time = convertMilliseconds(formatEnd);
+  let end = convertMilliseconds(formatEnd);
 
   try {
-    // const { data, error } = await supabase
-    //   .from("meetings")
-    //   .insert([{ name, duration: parseInt(duration), datetime }]);
+    const { data: insert_meeting, error: insert_meeting_err } = await supabase
+      .from("meetings")
+      .insert([
+        {
+          meeting_room_id: roomId,
+          meeting_environment: environment,
+          meeting_duration: duration,
+          meeting_date: expires,
+          start_time: start,
+          end_time: end,
+        },
+      ]);
 
-    // if (error) throw error;
+    if (insert_meeting_err) {
+      console.log("Insert meeting err ", insert_meeting_err);
+      window.alert(insert_meeting_err);
+    } else {
+      console.log("Inserted meeting ", insert_meeting);
+      window.alert(insert_meeting);
+    }
+
+    const { data: insert_participants, error: insert_participants_err } =
+      await supabase.from("meeting_participants").insert([
+        { meeting_id: roomId, user_id: crush },
+        { meeting_id: roomId, user_id: thisUser },
+      ]);
+
+    if (insert_participants_err) {
+      console.log("Insert participants error ", insert_participants_err);
+    } else {
+      console.log("Participants inserted ", insert_participants);
+    }
     // console.log(
     //   `Scheduled: RoomID: ${roomId} in ${environment} with ${crush} for ${duration} mins, on ${datetime}`
     // );
@@ -106,15 +128,6 @@ app.post("/schedule", (req, res) => {
     // ).toLocaleString()} ✅
     //   </div>
     // `);
-    // if (isHTMX(req)) {
-    //   res.send(`
-    //   <div class="p-4 bg-green-100 text-green-800 rounded">
-    //     Meeting between ${thisUser} & ${crush} in ${environment} background (Room ${roomId}), scheduled for ${duration} minutes on ${datetime} ✅
-    //   </div>
-    // `);
-    // } else {
-    //   res.render("index", { users }); // or another base template that includes the navbar + #main
-    // }
 
     res.render("result", {
       crush,
@@ -123,8 +136,8 @@ app.post("/schedule", (req, res) => {
       now,
       roomId,
       thisUser,
-      start_time,
-      end_time,
+      start,
+      end,
     });
   } catch (err) {
     res.status(500).send(`
@@ -163,6 +176,31 @@ app.get("/signin", (req, res) => {
   } else {
     res.render("index", { users }); // or another base template that includes the navbar + #main
   }
+});
+app.post("/login", async (req, res) => {
+  const { email, password } = req.body;
+  const { user, error: signinErr } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
+  if (signinErr) {
+    return res.status(401).send("Login failed!");
+  }
+  res.render("partials/account");
+});
+
+app.post("/signup", async (req, res) => {
+  const { email, password } = req.body;
+  const { user, error: signUpErr } = await supabase.auth.signUp({
+    email,
+    password,
+  });
+  if (signUpErr) {
+    return res.status(400).send(signUpErr.message);
+  }
+  console.log("Created: ", user);
+  res.render("partials/account");
+  res.send(`User created; ${user.email}`);
 });
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
