@@ -123,10 +123,10 @@
       class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-green-600 sm:text-sm/6"
     />
     <input
-      id="password"
+      id="loginpassword"
       type="password"
       placeholder="your password"
-      name="password"
+      name="loginpassword"
       required
       class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-green-600 sm:text-sm/6"
     />
@@ -177,18 +177,18 @@
             <form action="/signup" method="POST" class="space-y-6">
               <div>
                 <label
-                  for="signup-email"
+                  for="username"
                   class="block text-sm/6 font-medium text-gray-900"
-                  >Email address</label
+                  >Username</label
                 >
                 <div class="mt-2">
                   <input
-                    id="signup-email"
-                    type="email"
-                    name="signupemail"
-                    placeholder="you@email.address"
+                    id="username"
+                    type="text"
+                    name="username"
+                    placeholder="What should we call you?"
+                    title="No one else will use this name"
                     required
-                    autocomplete="email"
                     class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-green-600 sm:text-sm/6"
                   />
                 </div>
@@ -197,7 +197,7 @@
               <div>
                 <div class="flex items-center justify-between">
                   <label
-                    for="signup-password"
+                    for="password"
                     class="block text-sm/6 font-medium text-gray-900"
                     >Password</label
                   >
@@ -211,9 +211,9 @@
                 </div>
                 <div class="mt-2">
                   <input
-                    id="signup-password"
+                    id="password"
                     type="password"
-                    name="signuppassword"
+                    name="password"
                     placeholder="Min. 7 characters (letters, symbols, numbers).."
                     required
                     class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-green-600 sm:text-sm/6"

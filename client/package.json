@@ -1,7 +1,7 @@
 {
-  "main": "appServer.js",
+  "main": "app.js",
   "scripts": {
-    "dev": "node --watch appServer.js",
+    "dev": "node --watch app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -9,7 +9,11 @@
   "license": "ISC",
   "dependencies": {
     "@supabase/supabase-js": "^2.52.0",
+    "bcrypt": "^6.0.0",
+    "dotenv": "^17.2.0",
     "ejs": "^3.1.10",
-    "express": "^5.1.0"
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.16.4"
   }
 }
