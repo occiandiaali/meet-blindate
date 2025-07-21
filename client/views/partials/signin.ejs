@@ -1,4 +1,7 @@
 <style>
+  input {
+    border: 0.3px solid lightgray;
+  }
   /***** MODAL DIALOG ****/
   #modal {
     /* Underlay covers entire screen. */
@@ -85,12 +88,13 @@
 
   .modal {
     background: white;
-    padding: 20px;
+    padding: 16px;
     border-radius: 8px;
     max-width: 500px;
     width: 100%;
     height: 86%;
-    margin-top: 6px;
+    margin-top: 2px;
+    overflow: auto;
   }
 
   .close-icon {
@@ -108,7 +112,7 @@
 <!---->
 
 <section class="mt-32 mx-4 sm:mx-auto sm:w-full sm:max-w-sm">
-  <h1 class="text-gray-900 text-2xl">Sign In</h1>
+  <h1 class="text-gray-900 text-2xl mb-2">Sign In</h1>
   <form class="space-y-6" method="post" action="/login">
     <input
       id="email"
@@ -142,7 +146,7 @@
     >
   </p>
   <div id="modal-overlay" class="modal-overlay">
-    <div class="modal mt-14">
+    <div class="modal mt-4">
       <div class="modal-header">
         <span class="close-icon">&times;</span>
       </div>
@@ -155,15 +159,15 @@
   <body class="h-full">
   ```
 -->
-        <div class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
+        <div class="flex min-h-full flex-col justify-center px-6 py-6 lg:px-8">
           <div class="sm:mx-auto sm:w-full sm:max-w-sm">
             <img
               src="https://www.svgrepo.com/show/284978/love-heart.svg"
               alt="Meet logo"
-              class="mx-auto h-10 w-auto"
+              class="mx-auto h-8 w-auto"
             />
             <h2
-              class="mt-10 text-center text-2xl/9 font-bold tracking-tight text-gray-900"
+              class="mt-12 text-center text-2xl/9 font-bold tracking-tight text-gray-900"
             >
               Create your account
             </h2>
@@ -181,11 +185,11 @@
                   <input
                     id="signup-email"
                     type="email"
-                    name="signup-email"
+                    name="signupemail"
                     placeholder="you@email.address"
                     required
                     autocomplete="email"
-                    class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                    class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-green-600 sm:text-sm/6"
                   />
                 </div>
               </div>
@@ -209,22 +213,92 @@
                   <input
                     id="signup-password"
                     type="password"
-                    name="signup-password"
+                    name="signuppassword"
                     placeholder="Min. 7 characters (letters, symbols, numbers).."
                     required
-                    autocomplete="current-password"
-                    class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                    class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-green-600 sm:text-sm/6"
+                  />
+                </div>
+              </div>
+              <!---->
+              <!-- <div>
+                <label
+                  for="first-name"
+                  class="block text-sm/6 font-medium text-gray-900"
+                  >First Name</label
+                >
+                <div class="mt-2">
+                  <input
+                    id="first-name"
+                    type="text"
+                    name="first_name"
+                    placeholder="First Name"
+                    required
+                    class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-green-600 sm:text-sm/6"
                   />
                 </div>
               </div>
 
               <div>
-                <button
-                  type="submit"
-                  class="flex w-full justify-center rounded-md bg-green-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-green-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
+                <label
+                  for="last-name"
+                  class="block text-sm/6 font-medium text-gray-900"
+                  >Last Name</label
                 >
-                  Sign Up
-                </button>
+                <div class="mt-2">
+                  <input
+                    id="last-name"
+                    type="text"
+                    name="last_name"
+                    placeholder="Last Name"
+                    required
+                    class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-green-600 sm:text-sm/6"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label
+                  for="user-name"
+                  class="block text-sm/6 font-medium text-gray-900"
+                  >UserName</label
+                >
+                <div class="mt-2">
+                  <input
+                    id="user-name"
+                    type="text"
+                    name="username"
+                    placeholder="What do we call you?"
+                    required
+                    class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-green-600 sm:text-sm/6"
+                  />
+                </div>
+              </div>
+              <div>
+                <label
+                  for="bio"
+                  class="block text-sm/6 font-medium text-gray-900"
+                  >Bio:</label
+                >
+                <div class="mt-2">
+                  <textarea
+                    id="bio"
+                    name="bio"
+                    rows="5"
+                    cols="40"
+                    class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-green-600 sm:text-sm/6"
+                    placeholder="Type some fun facts about you..."
+                  ></textarea>
+                </div>
+              </div> -->
+              <!---->
+
+              <div>
+                <input
+                  type="submit"
+                  class="cursor-pointer flex w-full justify-center rounded-md bg-green-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-green-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
+                  value="Sign up"
+                />
               </div>
             </form>
 

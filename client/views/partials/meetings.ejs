@@ -1,5 +1,11 @@
 <h1 class="text-3xl mt-20">Meetings ✅</h1>
-<p>You have no meetings to show.</p>
+<% if (locals.data) { %>
+<ul>
+  <li>Meetings List</li>
+</ul>
+<% } else { %>
+<p>You have no meetings to show, for now.</p>
+<% } %>
 
 <script type="importmap">
   {

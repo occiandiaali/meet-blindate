@@ -14,6 +14,14 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 function generateRoomId() {
   return Math.random().toString(36).substring(2, 15);
 }
+function uuidv4() {
+  return "10000000-1000-4000-8000-100000000000".replace(/[018]/g, (c) =>
+    (
+      +c ^
+      (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (+c / 4)))
+    ).toString(16)
+  );
+}
 const formatter = new Intl.DateTimeFormat("en-US", {
   year: "numeric",
   month: "2-digit",
@@ -63,9 +71,24 @@ app.get("/user/:id", (req, res) => {
   res.render("modal", { user });
 });
 
-app.get("/meetings", (req, res) => {
+app.get("/meetings", async (req, res) => {
   if (isHTMX(req)) {
-    res.render("partials/meetings");
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    const { data, error } = await supabase
+      .from("meeting_participants")
+      .select(
+        `
+        meeting_id,
+        meetings (meeting_room_id)
+        `
+      )
+      .eq("user_id", user?.id);
+    res.render("partials/meetings", { data });
+    if (error) {
+      console.log("/meetings err", error);
+    }
   } else {
     res.render("index", { users }); // or another base template that includes the navbar + #main
   }
@@ -73,7 +96,7 @@ app.get("/meetings", (req, res) => {
 app.post("/schedule", async (req, res) => {
   const { crush, environment, duration, datetime } = req.body;
 
-  const roomId = generateRoomId();
+  const roomId = uuidv4(); //generateRoomId();
   const thisUser = "AfroBro";
 
   let now = datetime;
@@ -186,21 +209,84 @@ app.post("/login", async (req, res) => {
   if (signinErr) {
     return res.status(401).send("Login failed!");
   }
-  res.render("partials/account");
+  res.render("index", { user });
 });
 
-app.post("/signup", async (req, res) => {
-  const { email, password } = req.body;
-  const { user, error: signUpErr } = await supabase.auth.signUp({
-    email,
-    password,
-  });
-  if (signUpErr) {
-    return res.status(400).send(signUpErr.message);
+app.post("/signup", (req, res) => {
+  // const { signupemail, signuppassword, first_name, last_name, username, bio } =
+  //   req.body;
+  const { signupemail, signuppassword } = req.body;
+  // const { data: signUpData, error: signUpErr } = await supabase.auth.signUp({
+  //   email: signupemail,
+  //   password: signuppassword,
+  // });
+  try {
+    supabase.auth
+      .signUp({ email: signupemail, password: signuppassword })
+      .then((data) => {
+        console.log("SignUp Data", data);
+      })
+      .catch((error) => {
+        res.send(`
+      <div>
+      <p style="color:red;">${error.message}</p>
+      <button style="background-color:green;padding:4px;color:white;border-radius:12px;" onclick="window.location.assign('/')">Try again</button>
+      `);
+      });
+  } catch (e) {
+    console.error("E", e);
   }
-  console.log("Created: ", user);
-  res.render("partials/account");
-  res.send(`User created; ${user.email}`);
+  // if (signUpErr) {
+  //   return res.status(400).send(`
+  //     <div>
+  //     <p class="text-red-600">${signUpErr.message}</p>
+  //     <button class="p-4 bg-green-100 text-green-800 rounded" onclick="window.location.assign('/')">Try again</button>
+  //     `);
+  //   res.send(`
+  //     <div>
+  //     <p style="color:red;">${signUpErr.message}</p>
+  //     <button style="background-color:green;padding:4px;color:white;border-radius:12px;" onclick="window.location.assign('/')">Try again</button>
+  //     `);
+  // }
+  // const userId = signUpData.user?.id;
+  // console.log("UserID ", userId);
+  // Insert to members table
+  // const { data: insertData, error: insertErr } = await supabase
+  //   .from("members")
+  //   .insert({
+  //     id: userId,
+  //     first_name,
+  //     last_name,
+  //     username,
+  //     bio,
+  //     avatar: null,
+  //   });
+  // if (insertErr) {
+  //   console.error("Failed to insert user profile: ", insertErr.message);
+  // }
+  // if (insertData) {
+  //   console.log("Created: ", userId);
+  //   res.send(`
+  //         <div >
+  //         <h2>Congrats! ${username} just joined Meet! ✅ </h2>
+  //         <p>Proceed to your Account page to finish setting up your profile (Important)</p>
+  //         <button class="p-4 bg-green-100 text-green-800 rounded" onclick="window.location.assign('/')">Continue</button>
+  //         </div>
+  //       `);
+  // }
+});
+
+app.post("/signout", async (req, res) => {
+  const { error } = await supabase.auth.signOut();
+
+  if (error) {
+    return res.status(400).send("Error signing out");
+  }
+
+  // Clear session data if necessary
+  req.session = null; // or any other session clearing logic
+
+  res.redirect("/"); // Redirect to home or login page
 });
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

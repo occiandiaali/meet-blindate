@@ -65,6 +65,12 @@
         class="block px-4 py-2 hover:bg-gray-100 dropped"
         >Settings</a
       >
+      <% if (locals.user) { %>
+      <form action="/signout" method="POST">
+        <button type="submit">Sign Out</button>
+      </form>
+
+      <% } else { %>
       <a
         href="/signin"
         hx-get="/signin"
@@ -74,6 +80,7 @@
         class="block px-4 py-2 hover:bg-gray-100 dropped"
         >Sign in</a
       >
+      <% } %>
     </div>
   </div>
 </nav>
