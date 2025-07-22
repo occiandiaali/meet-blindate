@@ -3,9 +3,9 @@ const dotenv = require("dotenv");
 dotenv.config();
 const { connectDb } = require("./config/database");
 const isHTMX = require("./public/js/isHTMX");
-
+const { verifyToken } = require("./config/isAuth");
 const users = require("./data/fakes");
-const { signUp } = require("./controllers/userController");
+const { login, signUp } = require("./controllers/userController");
 const { scheduleMeeting } = require("./controllers/meetingController");
 
 const app = express();
@@ -22,6 +22,10 @@ app.use(express.json());
 app.set("view engine", "ejs");
 
 // Routes
+// app.get("/", (req, res) => {
+//   res.render("index", { users });
+// });
+
 app.get("/", (req, res) => {
   res.render("index", { users });
 });
@@ -50,15 +54,19 @@ app.get("/settings", (req, res) => {
 });
 app.post("/schedule", scheduleMeeting);
 
+// app.get("/signin", (req, res) => {
+//   if (isHTMX(req)) {
+//     res.render("partials/signin");
+//   } else {
+//     res.render("index", { users }); // or another base template that includes the navbar + #main
+//   }
+// });
 app.get("/signin", (req, res) => {
-  if (isHTMX(req)) {
-    res.render("partials/signin");
-  } else {
-    res.render("index", { users }); // or another base template that includes the navbar + #main
-  }
+  res.render("signin");
 });
+app.post("/login", login);
 app.post("/signup", signUp);
 
 app.listen(PORT, () =>
-  console.log(`App Server is listening on port ${PORT}..`)
+  console.log(`App Server is now listening on port ${PORT}..`)
 );

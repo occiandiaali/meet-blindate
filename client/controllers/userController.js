@@ -70,24 +70,24 @@ exports.signUp = async (req, res) => {
 
 exports.login = async (req, res) => {
   try {
-    const { username, password } = req.body;
+    const { loginusername, loginpassword } = req.body;
 
     // Check If The Input Fields are Valid
-    if (!username || !password) {
+    if (!loginusername || !loginpassword) {
       return res
         .status(400)
         .json({ message: "Please Input Username and Password" });
     }
 
     // Check If User Exists In The Database
-    const user = await User.findOne({ username });
+    const user = await User.findOne({ username: loginusername });
 
     if (!user) {
       return res.status(401).json({ message: "Invalid username or password" });
     }
 
     // Compare Passwords
-    const passwordMatch = await bcrypt.compare(password, user.password);
+    const passwordMatch = await bcrypt.compare(loginpassword, user.password);
 
     if (!passwordMatch) {
       return res.status(401).json({ message: "Invalid username or password" });
@@ -95,14 +95,20 @@ exports.login = async (req, res) => {
 
     // Generate JWT Token
     const token = jwt.sign(
-      { userId: user._id, username: user.username },
+      { userId: user._id, username: user.loginusername },
       process.env.SECRET_KEY || "1234!@#%<{*&)",
       { expiresIn: "1h" }
     );
 
-    return res
-      .status(200)
-      .json({ message: "Login Successful", data: user, token });
+    return res.status(200).send(
+      `
+        <div>
+        <button onclick="window.location.assign('/')" style="width:64px;background-color:green;color:white;border-radius:14px;cursor:pointer;">Continue</button>
+        <p>You're signed in as ${user.username}!</p>
+        `
+    );
+
+    //  .json({ message: "Login Successful", data: user, token });
   } catch (error) {
     console.log(error.message);
     return res.status(500).json({ message: "Error during login" });
