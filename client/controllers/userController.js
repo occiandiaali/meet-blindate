@@ -51,7 +51,8 @@ exports.signUp = async (req, res) => {
 
     await newUser.save();
     console.log("User Created Successfully", newUser);
-    res.redirect("/");
+
+    res.redirect("/signin");
 
     // return res
     //   .status(201)
