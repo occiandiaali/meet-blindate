@@ -1,5 +1,85 @@
+<style>
+  p,
+  li {
+    font: 1rem "Fira Sans", sans-serif;
+  }
+
+  button {
+    width: 58px;
+    height: 28px;
+    margin-top: 4px;
+  }
+
+  #container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    max-width: 50%;
+    margin-top: 2%;
+    gap: 8px;
+    /* border: 0.2px solid indigo; */
+    padding: 6px;
+  }
+  #imgDiv {
+    width: 74px;
+    height: 74px;
+    background-color: teal;
+    border-radius: 12px;
+    cursor: pointer;
+  }
+  #joinBtn {
+    background-color: green;
+    color: white;
+    border-radius: 6px;
+    font-size: small;
+    cursor: pointer;
+  }
+  #refuseBtn {
+    background-color: red;
+    color: white;
+    border-radius: 6px;
+    font-size: small;
+    cursor: not-allowed;
+  }
+  #rowDiv {
+    text-wrap: nowrap;
+  }
+  #rowDiv > p {
+    font-size: 14px;
+    font-weight: bold;
+  }
+  @media screen and (max-width: 450px) {
+    #rowDiv > p {
+      font-size: 8px;
+      font-weight: 500;
+    }
+    button {
+      width: 48px;
+      height: 24px;
+      margin-top: 2px;
+    }
+  }
+</style>
+
 <h1 class="text-3xl mt-20">Meetings ✅</h1>
+<% if (locals.meetings) { %>
+<div>
+  <ul>
+    <% meetings.forEach(meeting => { %>
+    <li id="container">
+      <div id="imgDiv"></div>
+      <div id="rowDiv">
+        <p><%= meeting.roomId %> • <%= meeting.meetingDay.toDateString() %></p>
+        <p><%= meeting.duration %> • <%= meeting.participants[0] %></p>
+        <button id="joinBtn">Meet</button>
+        <button id="refuseBtn">Refuse</button>
+      </div>
+    </li>
+    <% }) %>
+  </ul>
+</div>
+<% } else { %>
 <p>You have no meetings to show, for now.</p>
+<% } %>
 
 <script type="importmap">
   {

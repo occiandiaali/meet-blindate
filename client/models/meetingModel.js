@@ -40,7 +40,8 @@ const meetingSchema = new mongoose.Schema({
   environment: String,
   meetingDay: Date,
   duration: String,
-  participants: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+  //participants: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+  participants: [{ type: String, ref: "User" }],
 });
 
 const Meeting = mongoose.model("Meeting", meetingSchema);
