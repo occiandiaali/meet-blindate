@@ -1,16 +1,20 @@
 <style>
-  p,
+  /* p,
   li {
     font: 1rem "Fira Sans", sans-serif;
+  } */
+  p,
+  li {
+    font: "Fira Sans", sans-serif;
   }
 
   button {
     width: 58px;
     height: 28px;
-    margin-top: 4px;
+    margin-top: 2px;
   }
 
-  #container {
+  .ul-container {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     max-width: 50%;
@@ -19,6 +23,11 @@
     /* border: 0.2px solid indigo; */
     padding: 6px;
   }
+
+  .greyP {
+    font-size: smaller;
+  }
+
   #imgDiv {
     width: 74px;
     height: 74px;
@@ -47,6 +56,17 @@
     font-size: 14px;
     font-weight: bold;
   }
+
+  .sectionDiv {
+    max-height: 240px;
+    width: 100%;
+    margin-top: 1rem;
+    overflow: auto;
+    border: 1px solid lightgreen;
+    border-radius: 8px;
+    padding: 6px;
+  }
+
   @media screen and (max-width: 450px) {
     #rowDiv > p {
       font-size: 8px;
@@ -60,16 +80,32 @@
   }
 </style>
 
-<h1 class="text-3xl mt-20">Meetings ✅</h1>
-<% if (locals.meetings) { %>
-<div>
+<!-- <h1 class="text-2xl mt-5">My Meets ✅</h1> -->
+<% if (meetings) { %>
+<h3 class="mt-14 text-1xl">My requests</h3>
+<div class="sectionDiv">
   <ul>
     <% meetings.forEach(meeting => { %>
-    <li id="container">
-      <div id="imgDiv"></div>
+    <li id="open" class="ul-container">
+      <div id="imgDiv">
+        <img
+          src="<%= meeting.crushphoto %>"
+          alt="<%= meeting.participants[0] %>"
+          loading="lazy"
+          onerror="this.src='../../assets/images/placeholder_pic.jpg';"
+          width="74px"
+          height="74px"
+        />
+      </div>
       <div id="rowDiv">
-        <p><%= meeting.roomId %> • <%= meeting.meetingDay.toDateString() %></p>
-        <p><%= meeting.duration %> • <%= meeting.participants[0] %></p>
+        <p style="font-weight: bold"><%= meeting.participants[0] %> Meeting</p>
+        <p class="greyP">
+          <%= meeting.meetingDay.toDateString() %> for <%= meeting.duration %>
+          minutes
+        </p>
+        <p class="greyP">Room ID: <%= meeting.roomId %></p>
+        <!-- <p><%= meeting.roomId %> • <%= meeting.meetingDay.toDateString() %></p>
+        <p><%= meeting.duration %> • <%= meeting.participants[0] %></p> -->
         <button id="joinBtn">Meet</button>
         <button id="refuseBtn">Refuse</button>
       </div>
@@ -77,10 +113,76 @@
     <% }) %>
   </ul>
 </div>
+
+<h3 class="mt-5 text-1xl">Got requested</h3>
+<div class="sectionDiv"></div>
 <% } else { %>
 <p>You have no meetings to show, for now.</p>
 <% } %>
 
+<!-- Canvas Modal -->
+<div
+  id="canvasModal"
+  class="fixed inset-0 hidden bg-black bg-opacity-50 flex items-center justify-center z-50"
+>
+  <div class="bg-white w-full h-full relative">
+    <p class="absolute top-4 left-12 text-green-700 text-4xl" id="timerP"></p>
+    <p class="absolute top-12 left-12 text-orange-400 text-md" id="roomP"></p>
+    <p
+      class="absolute top-12 right-4 px-3 text-indigo-600 text-sm"
+      id="memberP"
+    ></p>
+    <p class="absolute top-48 left-32 text-red-400 text-lg" id="errP"></p>
+
+    <button
+      onclick="window.closeCanvasModal()"
+      class="absolute top-4 right-4 bg-gray-300 px-3 py-1 rounded"
+    >
+      Exit
+    </button>
+
+    <iframe
+      id="renderFrame"
+      class="w-full h-full border-none bg-gray-300"
+      allow="fullscreen;microphone;autoplay;xr-spatial-tracking"
+    ></iframe>
+    <p
+      class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 px-3 text-indigo-600 text-2xl"
+      id="initFrame"
+    >
+      Initializing...
+    </p>
+  </div>
+</div>
+
+<!--Requester Modal-->
+<div
+  id="requesterModal"
+  class="fixed inset-0 hidden bg-black bg-opacity-50 flex items-center justify-center z-50"
+>
+  <div class="bg-white max-w-sm max-h-max p-4 relative">
+    <button
+      onclick="window.closeRequesterModal()"
+      class="absolute top-4 right-4 bg-gray-300 px-3 py-1 rounded"
+    >
+      Close
+    </button>
+    <h1>Requester Modal</h1>
+    <img
+      src="https://i.pravatar.cc/100?img=11"
+      alt="requester"
+      class="w-20 h-20 rounded-full mb-2"
+    />
+    <p>
+      Lorem ipsum dolor sit amet consectetur, adipisicing elit. Quidem harum,
+      velit possimus repudiandae officia debitis illo incidunt, vero eveniet
+      fugit soluta dolorem labore ipsa. Officia aliquam ullam eius maxime
+      fugiat?
+    </p>
+  </div>
+</div>
+
+<script src="https://cdn.tailwindcss.com"></script>
 <script type="importmap">
   {
     "imports": {
@@ -99,8 +201,19 @@
   let socket,
     roomIdentity = null;
   const playerPlus = [];
-
-  function onWindowLoaded() {}
-
   window.onload = onWindowLoaded();
+
+  function onWindowLoaded() {
+    let joinBtn = document.getElementById("joinBtn");
+    joinBtn?.addEventListener("click", () => {
+      document.getElementById("canvasModal").classList.remove("hidden");
+    });
+  }
+
+  function closeCanvasModal() {
+    document.getElementById("canvasModal").classList.add("hidden");
+  }
+  window.closeCanvasModal = closeCanvasModal;
+
+  function closeRequesterModal() {}
 </script>

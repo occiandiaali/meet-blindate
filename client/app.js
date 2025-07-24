@@ -6,6 +6,8 @@ dotenv.config();
 const { connectDb } = require("./config/database");
 const isHTMX = require("./public/js/isHTMX");
 const uuidv4 = require("./public/js/uuidv4");
+const convertMillisToMins = require("./public/js/convertMillisToMins");
+const addMinutesToDate = require("./public/js/addMinsToDate");
 const { verifyToken } = require("./config/isAuth");
 const users = require("./data/fakes");
 const { login, signUp } = require("./controllers/userController");
@@ -83,12 +85,18 @@ app.get("/", requireLogin, (req, res) => {
 });
 
 app.post("/schedule", async (req, res) => {
-  const { crush, environment, meetingDay, duration } = req.body;
+  const { crush, crushphoto, environment, meetingDay, meetDuration } = req.body;
   const roomId = uuidv4();
   const participants = [];
   let sessionUser = req.session.username;
   console.log("Session user ", sessionUser);
   (participants[0] = crush), (participants[1] = sessionUser);
+  let duration = convertMillisToMins(meetDuration);
+  // const originalDate = meetingDay;
+  // let startTime = originalDate.toTimeString().substring(0, 8);
+  // let plusTime = addMinutesToDate(originalDate, meetDuration);
+  // let endTime = plusTime.toTimeString().substring(0, 8);
+
   try {
     // Save the document
     const newMeet = new Meeting({
@@ -96,7 +104,10 @@ app.post("/schedule", async (req, res) => {
       environment,
       meetingDay,
       duration,
+      // startTime,
+      // endTime,
       participants,
+      crushphoto,
     });
 
     await newMeet.save();
@@ -104,8 +115,8 @@ app.post("/schedule", async (req, res) => {
     return res.status(200).send(
       `
         <div style="width: 450px;height:450px;padding:4px;">
-        <button onclick="window.location.assign('/')" style="width:64px;background-color:green;color:white;border-radius:14px;cursor:pointer;">Continue</button>
         <p>You've scheduled a new Meeting!</p>
+        <button onclick="window.location.assign('/')" style="width:64px;background-color:green;color:white;border-radius:14px;cursor:pointer;">Continue</button>
         </div>
         `
     );

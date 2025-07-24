@@ -39,9 +39,12 @@ const meetingSchema = new mongoose.Schema({
   roomId: String,
   environment: String,
   meetingDay: Date,
+  // startTime: String,
+  // endTime: String,
   duration: String,
   //participants: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
   participants: [{ type: String, ref: "User" }],
+  crushphoto: String,
 });
 
 const Meeting = mongoose.model("Meeting", meetingSchema);

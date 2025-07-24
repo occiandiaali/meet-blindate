@@ -280,6 +280,7 @@
               class="mt-6"
             >
               <input class="hidden" id="crush" name="crush" />
+              <input class="hidden" id="crushphoto" name="crushphoto" />
 
               <label>Background:</label>
               <select
@@ -320,7 +321,7 @@
               /> -->
               <label>Choose a duration (minutes):</label>
               <select
-                name="duration"
+                name="meetDuration"
                 class="w-full mb-2 block p-2 border rounded"
               >
                 <option value="">--Duration--</option>
@@ -423,6 +424,7 @@
       document.querySelectorAll(".user-card").forEach((card) => {
         card.addEventListener("click", () => {
           document.getElementById("crush").value = card.dataset.name;
+          document.getElementById("crushphoto").value = card.dataset.photo;
           document.getElementById("modal-name").textContent = card.dataset.name;
           document.getElementById("modal-status").textContent =
             card.dataset.status;
