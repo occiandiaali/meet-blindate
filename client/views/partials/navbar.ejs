@@ -2,7 +2,15 @@
   class="bg-white flex items-center justify-between px-6 py-2 fixed w-full z-50"
 >
   <div class="flex items-center gap-6">
-    <a href="/" class="text-3xl text-green-500 font-bold">/miːt/</a>
+    <!-- <a href="/" class="text-3xl text-green-500 font-bold">/miːt/</a> -->
+    <a href="/">
+      <img
+        src="../../assets/images/no_bg_logo.png"
+        alt="App Logo"
+        width="74px"
+        height="40px"
+      />
+    </a>
     <a
       href="/account"
       hx-get="/account"
@@ -21,7 +29,6 @@
       class="hidden md:block text-md"
       >Meetings</a
     >
-    <!-- <a href="/notifications" hx-get="/notifications" hx-target="#mainContent" hx-push-url="true" hx-swap="innerHTML" class="text-lg">Notifications</a> -->
   </div>
   <div class="relative">
     <button
@@ -65,14 +72,8 @@
         class="block px-4 py-2 hover:bg-gray-100 dropped"
         >Settings</a
       >
-      <a
-        href="/signin"
-        hx-get="/signin"
-        hx-target="#mainContent"
-        hx-swap="innerHTML"
-        hx-push-url="true"
-        class="block px-4 py-2 hover:bg-gray-100 dropped"
-        >Sign in</a
+      <a href="/logout" class="block px-4 py-2 hover:bg-gray-200 dropped"
+        >Log Out</a
       >
     </div>
   </div>

@@ -1,11 +1,290 @@
-<h1 class="text-3xl mt-20">Meetings ✅</h1>
-<p>You have no meetings to show.</p>
+<style>
+  /* p,
+  li {
+    font: 1rem "Fira Sans", sans-serif;
+  } */
+  p,
+  li {
+    font: "Fira Sans", sans-serif;
+  }
 
+  button {
+    width: 58px;
+    height: 28px;
+    margin-top: 2px;
+  }
+
+  .ul-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    max-width: 50%;
+    margin-top: 2%;
+    gap: 8px;
+    /* border: 0.2px solid indigo; */
+    padding: 6px;
+  }
+
+  .greyP {
+    font-size: smaller;
+  }
+
+  #imgDiv {
+    width: 74px;
+    height: 74px;
+    background-color: teal;
+    border-radius: 12px;
+    cursor: pointer;
+  }
+  #joinBtn {
+    background-color: green;
+    color: white;
+    border-radius: 6px;
+    font-size: small;
+    cursor: pointer;
+  }
+  #joinButton {
+    background-color: green;
+    color: white;
+    border-radius: 6px;
+    font-size: small;
+    cursor: pointer;
+  }
+  #refuseBtn {
+    background-color: red;
+    color: white;
+    border-radius: 6px;
+    font-size: small;
+    cursor: not-allowed;
+  }
+  #rejectBtn {
+    background-color: red;
+    color: white;
+    border-radius: 6px;
+    font-size: small;
+    cursor: not-allowed;
+  }
+  #rowDiv {
+    text-wrap: nowrap;
+  }
+  #rowDiv > p {
+    font-size: 14px;
+    font-weight: bold;
+  }
+
+  .sectionDiv {
+    max-height: 240px;
+    width: 100%;
+    margin-top: 1rem;
+    overflow: auto;
+    border: 1px solid lightgreen;
+    border-radius: 8px;
+    padding: 6px;
+  }
+
+  /* Modal Backdrop */
+  #meeting-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+
+  /* Modal Content */
+  #meeting-modal-content {
+    background: #fff;
+    padding: 2rem;
+    border-radius: 10px;
+    /* max-width: 600px;
+    width: 90%; */
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    position: relative;
+  }
+
+  /* Responsive iframe container */
+  .modal-video-container {
+    position: relative;
+    width: 100%;
+    padding-bottom: 56.25%; /* 16:9 aspect ratio */
+    height: 0;
+    overflow: hidden;
+    border-radius: 8px;
+  }
+
+  .modal-video-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Close button */
+  #meeting-modal-content button {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    /* margin-top: 1rem; */
+    background: #ad070f;
+    color: white;
+    border: none;
+    /* padding: 0.6rem 1rem; */
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  #meeting-modal-content button:hover {
+    background: #351515;
+  }
+
+  @media screen and (max-width: 450px) {
+    #rowDiv > p {
+      font-size: 8px;
+      font-weight: 500;
+    }
+    button {
+      width: 48px;
+      height: 24px;
+      margin-top: 2px;
+    }
+  }
+</style>
+
+<!-- <h1 class="text-2xl mt-5">My Meets ✅</h1> -->
+<% if (meetings) { %>
+<h3 class="mt-14 text-1xl">My requests</h3>
+<div class="sectionDiv">
+  <ul>
+    <% meetings.forEach(meeting => { %>
+    <li id="open" class="ul-container">
+      <div id="imgDiv">
+        <img
+          src="<%= meeting.crushphoto %>"
+          alt="<%= meeting.participants[0] %>"
+          loading="lazy"
+          onerror="this.src='../../assets/images/placeholder_pic.jpg';"
+          width="74px"
+          height="74px"
+        />
+      </div>
+      <div id="rowDiv">
+        <p style="font-weight: bold"><%= meeting.participants[0] %> Meeting</p>
+        <p class="greyP">
+          <%= meeting.meetingDay.toDateString() %> for <%= meeting.duration %>
+          minutes
+        </p>
+        <p class="greyP">Room ID: <%= meeting.roomId %></p>
+        <!-- <p><%= meeting.roomId %> • <%= meeting.meetingDay.toDateString() %></p>
+        <p><%= meeting.duration %> • <%= meeting.participants[0] %></p> -->
+        <button
+          id="joinButton"
+          class="meeting-item"
+          data-roomid="<%= meeting.roomId %>"
+          data-date="<%= meeting.meetingDay.toDateString() %>"
+          data-duration="<%= meeting.duration %>"
+          data-participant="<%= meeting.participants[0] %>"
+          data-crushphoto="<%= meeting.crushphoto %>"
+          data-env="<%= meeting.environment %>"
+        >
+          Join
+        </button>
+        <button id="rejectBtn">Reject</button>
+      </div>
+    </li>
+    <% }) %>
+  </ul>
+</div>
+
+<h3 class="mt-5 text-1xl">Got requested</h3>
+<div class="sectionDiv"></div>
+<% } else { %>
+<p>You have no meetings to show, for now.</p>
+<% } %>
+
+<!--iFrame Modal -->
+<div id="meeting-modal">
+  <div id="meeting-modal-content">
+    <img id="modal-crushphoto" />
+    <h3 id="modal-participant"></h3>
+    <p id="modal-date"></p>
+    <p id="modal-roomid"></p>
+    <div class="modal-video-container">
+      <p id="modal-duration"></p>
+      <p id="modal-env"></p>
+      <!-- <iframe id="modal-env" class="w-full h-full border-none bg-gray-300" frameborder="0" allow="fullscreen;microphone;autoplay;xr-spatial-tracking"></iframe> -->
+      <!-- <p
+      class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 px-3 text-indigo-600 text-2xl"
+      id="initFrame"
+    >
+      Initializing...
+    </p> -->
+    </div>
+    <button onclick="closeModal()">Exit</button>
+  </div>
+</div>
+
+<!--Requester Modal-->
+<!-- <div
+  id="requesterModal"
+  class="fixed inset-0 hidden bg-black bg-opacity-50 flex items-center justify-center z-50"
+>
+  <div class="bg-white max-w-sm max-h-max p-4 relative">
+    <button
+      onclick="window.closeRequesterModal()"
+      class="absolute top-4 right-4 bg-gray-300 px-3 py-1 rounded"
+    >
+      Close
+    </button>
+    <h1>Requester Modal</h1>
+    <img
+      src="https://i.pravatar.cc/100?img=11"
+      alt="requester"
+      class="w-20 h-20 rounded-full mb-2"
+    />
+    <p>
+      Lorem ipsum dolor sit amet consectetur, adipisicing elit. Quidem harum,
+      velit possimus repudiandae officia debitis illo incidunt, vero eveniet
+      fugit soluta dolorem labore ipsa. Officia aliquam ullam eius maxime
+      fugiat?
+    </p>
+  </div>
+</div> -->
+
+<script src="https://cdn.tailwindcss.com"></script>
 <script type="importmap">
   {
     "imports": {
       "socket.io-client": "https://cdn.socket.io/4.8.1/socket.io.esm.min.js"
     }
+  }
+</script>
+
+<script>
+  document.querySelectorAll(".meeting-item").forEach((item) => {
+    item.addEventListener("click", () => {
+      document.getElementById("modal-crushphoto").src = item.dataset.crushphoto;
+      document.getElementById("modal-date").innerText = item.dataset.date;
+      document.getElementById("modal-participant").innerText =
+        item.dataset.participant;
+      document.getElementById("modal-duration").innerText =
+        item.dataset.duration;
+      // document.getElementById('modal-env').src = item.dataset.env;
+      document.getElementById("modal-env").innerText = item.dataset.env;
+      document.getElementById("meeting-modal").style.display = "block";
+    });
+  });
+
+  function closeModal() {
+    document.getElementById("meeting-modal").style.display = "none";
+    // document.getElementById('modal-video').src = ''; // Reset video on close
   }
 </script>
 
@@ -19,8 +298,19 @@
   let socket,
     roomIdentity = null;
   const playerPlus = [];
-
-  function onWindowLoaded() {}
-
   window.onload = onWindowLoaded();
+
+  function onWindowLoaded() {
+    let joinBtn = document.getElementById("joinBtn");
+    joinBtn?.addEventListener("click", () => {
+      document.getElementById("canvasModal").classList.remove("hidden");
+    });
+  }
+
+  function closeCanvasModal() {
+    document.getElementById("canvasModal").classList.add("hidden");
+  }
+  window.closeCanvasModal = closeCanvasModal;
+
+  function closeRequesterModal() {}
 </script>
