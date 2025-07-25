@@ -1,8 +1,4 @@
 <style>
-  /* p,
-  li {
-    font: 1rem "Fira Sans", sans-serif;
-  } */
   p,
   li {
     font: "Fira Sans", sans-serif;
@@ -272,14 +268,19 @@
     ></p>
     <div class="modal-video-container">
       <!-- <p id="modal-env"></p> -->
-      <iframe
+      <!-- <iframe
         id="modal-env"
         src="https://www.youtube.com/embed/gY6-vlnbaSU?si=UW4qVc3LfkG8b6hI"
         class="w-full h-full border-none bg-gray-300"
         frameborder="0"
         allow="fullscreen;microphone;autoplay;xr-spatial-tracking"
+      ></iframe> -->
+      <iframe
+        id="modal-env"
+        class="w-full h-full border-none bg-gray-300"
+        frameborder="0"
+        allow="fullscreen;microphone;autoplay;xr-spatial-tracking"
       ></iframe>
-      <!-- <iframe id="modal-env" src="https://www.youtube.com/embed/gY6-vlnbaSU?si=UW4qVc3LfkG8b6hI class="w-full h-full border-none bg-gray-300" frameborder="0" allow="fullscreen;microphone;autoplay;xr-spatial-tracking"></iframe> -->
       <!-- <p
       class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 px-3 text-indigo-600 text-2xl"
       id="initFrame"
@@ -287,7 +288,7 @@
       Initializing...
     </p> -->
     </div>
-    <button onclick="closeModal()">Exit</button>
+    <button onclick="window.closeIFrameModal()">Exit</button>
   </div>
 </div>
 
@@ -298,23 +299,11 @@
 >
   <div class="bg-white max-w-sm max-h-max p-4 mt-14 place-self-center relative">
     <button
-      onclick="closeRequesterModal()"
+      onclick="window.closeRequesterModal()"
       class="absolute top-4 right-4 bg-gray-300 px-3 py-1 rounded"
     >
       Close
     </button>
-    <!-- <h1>Requester Modal</h1>
-    <img
-      src="https://i.pravatar.cc/100?img=11"
-      alt="requester"
-      class="w-20 h-20 rounded-full mb-2"
-    />
-    <p>
-      Lorem ipsum dolor sit amet consectetur, adipisicing elit. Quidem harum,
-      velit possimus repudiandae officia debitis illo incidunt, vero eveniet
-      fugit soluta dolorem labore ipsa. Officia aliquam ullam eius maxime
-      fugiat?
-    </p> -->
     <img id="reqmodalcrushphoto" />
     <h3 id="reqmodalparticipant"></h3>
     <p>
@@ -327,15 +316,20 @@
 </div>
 
 <script src="https://cdn.tailwindcss.com"></script>
-<script type="importmap">
+<!-- <script type="importmap">
   {
     "imports": {
       "socket.io-client": "https://cdn.socket.io/4.8.1/socket.io.esm.min.js"
     }
   }
-</script>
+</script> -->
+<script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
 
 <script>
+  let socket,
+    roomIdentity = null;
+  const playerPlus = [];
+
   document.querySelectorAll(".meeting-item").forEach((item) => {
     item.addEventListener("click", () => {
       // document.getElementById("modal-crushphoto").src = item.dataset.crushphoto;
@@ -344,10 +338,38 @@
       //   item.dataset.participant;
       document.getElementById("modal-duration").innerText =
         item.dataset.duration;
-      // document.getElementById('modal-env').src = item.dataset.env;
+      document.getElementById("modal-env").src = item.dataset.env;
       //  document.getElementById("modal-env").innerText = item.dataset.env;
       document.getElementById("meeting-modal").style.display = "block";
-    });
+
+      // initialize socket io
+      socket = io("http://localhost:3003");
+      socket.emit("duration", item.dataset.duration);
+
+      socket.on("playerJoined", (data) => {
+        if (!playerPlus.includes(data.id)) {
+          playerPlus.push(data.id);
+        }
+        console.log("playerPlus ", playerPlus);
+      });
+      socket.on("joinRoomError", (msg) => {
+        console.log(msg);
+        return;
+      });
+      socket.on("timer", (time) => {
+        document.getElementById("modal-duration").textContent = time;
+        if (time <= 3) {
+          document.getElementById("modal-duration").style.color = "#FF0000";
+        }
+        if (time === 0) {
+          socket.disconnect();
+          window.closeIFrameModal();
+        }
+      });
+      socket.on("disconnectNotice", (msg) => {
+        window.alert(msg);
+      });
+    }); // socket zone
   });
 
   document.querySelectorAll(".meeting-req").forEach((item) => {
@@ -360,38 +382,24 @@
     });
   });
 
-  function closeModal() {
-    document.getElementById("meeting-modal").style.display = "none";
+  function closeIFrameModal() {
+    for (let i = 0; i < playerPlus.length; i++) {
+      if (playerPlus[i] !== socket.id) {
+        socket.emit("closeModal", playerPlus[i]);
+        document.getElementById("meeting-modal").style.display = "none";
+        //  document.getElementById("modal-video").src = ""; // Reset video on close
+        console.log("closeModal fired on ", playerPlus[i]);
+        socket.disconnect();
+        window.location.assign("/");
+      }
+    }
+    //document.getElementById("meeting-modal").style.display = "none";
     // document.getElementById('modal-video').src = ''; // Reset video on close
   }
+  window.closeIFrameModal = closeIFrameModal;
+
   function closeRequesterModal() {
     document.getElementById("reqModal").style.display = "none";
   }
-</script>
-
-<script type="module">
-  import { formatDate, isInputEqualToToday } from "/js/calendarMatters.js";
-
-  const generateRandomHexColor = () => {
-    return "#" + Math.floor(Math.random() * 16777215).toString(16);
-  };
-
-  let socket,
-    roomIdentity = null;
-  const playerPlus = [];
-  window.onload = onWindowLoaded();
-
-  function onWindowLoaded() {
-    let joinBtn = document.getElementById("joinBtn");
-    joinBtn?.addEventListener("click", () => {
-      document.getElementById("canvasModal").classList.remove("hidden");
-    });
-  }
-
-  function closeCanvasModal() {
-    document.getElementById("canvasModal").classList.add("hidden");
-  }
-  window.closeCanvasModal = closeCanvasModal;
-
-  function closeRequesterModal() {}
+  window.closeRequesterModal = closeRequesterModal;
 </script>

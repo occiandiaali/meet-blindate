@@ -78,20 +78,16 @@ io.on("connection", (socket) => {
           //  io.emit("disconnectNotice", "Time's up or no users remaining.");
           socket.broadcast.emit("disconnectNotice", "Time's up.");
 
-          // for (const [id, s] of io.sockets.sockets) {
-          //   s.disconnect(true);
-          // }
-
           clearInterval(interval);
           interval = null;
-          countdown = 5; //30;
+          countdown = 5;
           connectedUsers.clear();
         }
       }, 60000);
     }
   });
 
-  socket.on("item2", (arg) => {
+  socket.on("duration", (arg) => {
     console.log("<<<<<<Actual duration is>>>>>> ", arg);
     countdown = arg;
   });
