@@ -14,6 +14,19 @@
     margin-top: 2px;
   }
 
+  #filtersDiv {
+    display: flex;
+    flex-direction: row;
+    margin-top: 10%;
+  }
+  #filtersDiv > img {
+    cursor: pointer;
+  }
+  #filtersDiv > img:hover {
+    transform: scale(1.2);
+    -webkit-transform: scale(1.2);
+  }
+
   .ul-container {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -26,6 +39,7 @@
 
   .greyP {
     font-size: smaller;
+    font-weight: 400;
   }
 
   #imgDiv {
@@ -33,7 +47,6 @@
     height: 74px;
     background-color: teal;
     border-radius: 12px;
-    cursor: pointer;
   }
   #joinBtn {
     background-color: green;
@@ -66,17 +79,17 @@
   #rowDiv {
     text-wrap: nowrap;
   }
-  #rowDiv > p {
+  /* #rowDiv > p {
     font-size: 14px;
     font-weight: bold;
-  }
+  } */
 
   .sectionDiv {
-    max-height: 240px;
+    max-height: 480px;
     width: 100%;
     margin-top: 1rem;
     overflow: auto;
-    border: 1px solid lightgreen;
+    /* border: 1px solid lightgreen; */
     border-radius: 8px;
     padding: 6px;
   }
@@ -147,20 +160,42 @@
 
   @media screen and (max-width: 450px) {
     #rowDiv > p {
-      font-size: 8px;
-      font-weight: 500;
+      font-size: 12px;
+      font-weight: 600;
+      text-wrap: wrap;
     }
     button {
       width: 48px;
       height: 24px;
       margin-top: 2px;
     }
+    #filtersDiv {
+      display: flex;
+      flex-direction: row;
+      margin-top: 25%;
+    }
   }
 </style>
 
 <!-- <h1 class="text-2xl mt-5">My Meets ✅</h1> -->
 <% if (meetings) { %>
-<h3 class="mt-14 text-1xl">My requests</h3>
+
+<div id="filtersDiv">
+  <img
+    src="../../assets/images/down-arrow.svg"
+    alt="down arrow"
+    width="20"
+    height="20"
+    onclick="window.alert('Filter down..')"
+  />
+  <img
+    src="../../assets/images/up-arrow.svg"
+    alt="up arrow"
+    width="20"
+    height="20"
+    onclick="window.alert('Filter up..')"
+  />
+</div>
 <div class="sectionDiv">
   <ul>
     <% meetings.forEach(meeting => { %>
@@ -176,10 +211,19 @@
         />
       </div>
       <div id="rowDiv">
-        <p style="font-weight: bold"><%= meeting.participants[0] %> Meeting</p>
+        <p style="font-weight: 500">
+          Meet with
+          <a
+            href="#"
+            class="meeting-req underline text-green-700 font-semibold"
+            data-reqmodalcrushphoto="<%= meeting.crushphoto %>"
+            data-reqmodalparticipant="<%= meeting.participants[0] %>"
+            ><%= meeting.participants[0] %></a
+          >
+        </p>
         <p class="greyP">
           <%= meeting.meetingDay.toDateString() %> for <%= meeting.duration %>
-          minutes
+          minutes ✅
         </p>
         <p class="greyP">Room ID: <%= meeting.roomId %></p>
         <!-- <p><%= meeting.roomId %> • <%= meeting.meetingDay.toDateString() %></p>
@@ -203,8 +247,6 @@
   </ul>
 </div>
 
-<h3 class="mt-5 text-1xl">Got requested</h3>
-<div class="sectionDiv"></div>
 <% } else { %>
 <p>You have no meetings to show, for now.</p>
 <% } %>
@@ -250,18 +292,18 @@
 </div>
 
 <!--Requester Modal-->
-<!-- <div
-  id="requesterModal"
+<div
+  id="reqModal"
   class="fixed inset-0 hidden bg-black bg-opacity-50 flex items-center justify-center z-50"
 >
-  <div class="bg-white max-w-sm max-h-max p-4 relative">
+  <div class="bg-white max-w-sm max-h-max p-4 mt-14 place-self-center relative">
     <button
-      onclick="window.closeRequesterModal()"
+      onclick="closeRequesterModal()"
       class="absolute top-4 right-4 bg-gray-300 px-3 py-1 rounded"
     >
       Close
     </button>
-    <h1>Requester Modal</h1>
+    <!-- <h1>Requester Modal</h1>
     <img
       src="https://i.pravatar.cc/100?img=11"
       alt="requester"
@@ -272,9 +314,17 @@
       velit possimus repudiandae officia debitis illo incidunt, vero eveniet
       fugit soluta dolorem labore ipsa. Officia aliquam ullam eius maxime
       fugiat?
+    </p> -->
+    <img id="reqmodalcrushphoto" />
+    <h3 id="reqmodalparticipant"></h3>
+    <p>
+      Lorem ipsum dolor sit amet consectetur, adipisicing elit. Quidem harum,
+      velit possimus repudiandae officia debitis illo incidunt, vero eveniet
+      fugit soluta dolorem labore ipsa. Officia aliquam ullam eius maxime
+      fugiat?
     </p>
   </div>
-</div> -->
+</div>
 
 <script src="https://cdn.tailwindcss.com"></script>
 <script type="importmap">
@@ -300,9 +350,22 @@
     });
   });
 
+  document.querySelectorAll(".meeting-req").forEach((item) => {
+    item.addEventListener("click", () => {
+      document.getElementById("reqmodalcrushphoto").src =
+        item.dataset.reqmodalcrushphoto;
+      document.getElementById("reqmodalparticipant").innerText =
+        item.dataset.reqmodalparticipant;
+      document.getElementById("reqModal").style.display = "block";
+    });
+  });
+
   function closeModal() {
     document.getElementById("meeting-modal").style.display = "none";
     // document.getElementById('modal-video').src = ''; // Reset video on close
+  }
+  function closeRequesterModal() {
+    document.getElementById("reqModal").style.display = "none";
   }
 </script>
 
