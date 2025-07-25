@@ -212,14 +212,32 @@
 <!--iFrame Modal -->
 <div id="meeting-modal">
   <div id="meeting-modal-content">
-    <img id="modal-crushphoto" />
+    <!-- <img id="modal-crushphoto" />
     <h3 id="modal-participant"></h3>
     <p id="modal-date"></p>
-    <p id="modal-roomid"></p>
+    <p id="modal-roomid"></p> -->
+    <p
+      id="modal-duration"
+      style="
+        position: absolute;
+        top: 2%;
+        left: 2%;
+        font-size: xx-large;
+        font-weight: bold;
+        color: green;
+        z-index: 99;
+      "
+    ></p>
     <div class="modal-video-container">
-      <p id="modal-duration"></p>
-      <p id="modal-env"></p>
-      <!-- <iframe id="modal-env" class="w-full h-full border-none bg-gray-300" frameborder="0" allow="fullscreen;microphone;autoplay;xr-spatial-tracking"></iframe> -->
+      <!-- <p id="modal-env"></p> -->
+      <iframe
+        id="modal-env"
+        src="https://www.youtube.com/embed/gY6-vlnbaSU?si=UW4qVc3LfkG8b6hI"
+        class="w-full h-full border-none bg-gray-300"
+        frameborder="0"
+        allow="fullscreen;microphone;autoplay;xr-spatial-tracking"
+      ></iframe>
+      <!-- <iframe id="modal-env" src="https://www.youtube.com/embed/gY6-vlnbaSU?si=UW4qVc3LfkG8b6hI class="w-full h-full border-none bg-gray-300" frameborder="0" allow="fullscreen;microphone;autoplay;xr-spatial-tracking"></iframe> -->
       <!-- <p
       class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 px-3 text-indigo-600 text-2xl"
       id="initFrame"
@@ -270,14 +288,14 @@
 <script>
   document.querySelectorAll(".meeting-item").forEach((item) => {
     item.addEventListener("click", () => {
-      document.getElementById("modal-crushphoto").src = item.dataset.crushphoto;
-      document.getElementById("modal-date").innerText = item.dataset.date;
-      document.getElementById("modal-participant").innerText =
-        item.dataset.participant;
+      // document.getElementById("modal-crushphoto").src = item.dataset.crushphoto;
+      // document.getElementById("modal-date").innerText = item.dataset.date;
+      // document.getElementById("modal-participant").innerText =
+      //   item.dataset.participant;
       document.getElementById("modal-duration").innerText =
         item.dataset.duration;
       // document.getElementById('modal-env').src = item.dataset.env;
-      document.getElementById("modal-env").innerText = item.dataset.env;
+      //  document.getElementById("modal-env").innerText = item.dataset.env;
       document.getElementById("meeting-modal").style.display = "block";
     });
   });
